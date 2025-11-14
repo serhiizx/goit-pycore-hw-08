@@ -48,8 +48,7 @@ def command_handler_add(book, *args):
 
     if not record:
         record = Record(name)
-    if phone:
-        record.add_phone(phone)
+    record.add_phone(phone)
     if birthday:
         record.add_birthday(birthday)
     book.add_record(record)

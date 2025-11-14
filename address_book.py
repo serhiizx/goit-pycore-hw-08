@@ -27,7 +27,8 @@ class Validator:
             raise ValueError(f"Incorrect birthday format. Use `{format}`")
 
     def only_numbers(self, value, error_message):
-        return
+        if not value.isdigit():
+            raise ValueError(error_message)
 
 class Field:
     validator = Validator()
