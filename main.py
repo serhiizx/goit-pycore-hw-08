@@ -108,7 +108,7 @@ def main():
 
     while True:
         user_input = input("Enter a command: ")
-        command, *args = parse_input(user_input)
+        command, *args = safe_args(2, parse_input(user_input))
 
         if command in commands:
             try:

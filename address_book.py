@@ -1,9 +1,11 @@
 from collections import UserDict
 from datetime import datetime, timedelta
 
-PHONE_LENGTH = 10
-
 class Validator:
+    def required(self, value, error_message) -> None:
+        if value is None:
+            raise ValueError(error_message)
+
     def not_empty(self, value, error_message):
         if len(value.strip()) == 0:
             raise ValueError(error_message)
@@ -47,34 +49,36 @@ class Name(Field):
     def validate(self, value):
         self.validator.not_empty(value, "Name should not be empty")
 
-
 class Phone(Field):
     def __init__(self, phone):
-        self.validate(str(phone))
-        super().__init__(str(phone))
+        self.validate(phone)
+        super().__init__(phone)
 
     def set_value(self, value):
         self.validate(value)
         self.value = value
 
     def validate(self, value):
+        self.validator.required(value, "Phone is required")
         self.validator.not_empty(value, "Phone should not be empty")
-        self.validator.len(value, PHONE_LENGTH, f"Phone should have {PHONE_LENGTH} numbers")
+        self.validator.only_numbers(value, "Phone should contain only numbers")
+        self.validator.len(value, 10, f"Phone should have 10 numbers")
 
 
 class Birthday(Field):
     format = "%d.%m.%Y"
     expected_format = "DD.MM.YYYY"
     def __init__(self, value):
-        valid_value = self.validator.date(
-            value,
-            self.format,
-            f"Invalid date format. Use {self.expected_format}"
-        )
-        super().__init__(valid_value)
+        self.validate(value)
+        super().__init__(value)
 
     def __str__(self):
         return str(self.value.strftime(self.format))
+
+    def validate(self, value):
+        self.validator.required(value, "Birthday is required")
+        self.validator.not_empty(value, "Birthday should not be empty")
+        self.validator.date(value, self.expected_format, f"Invalid date format. Use {self.expected_format}")
 
 class Record:
     def __init__(self, name):
